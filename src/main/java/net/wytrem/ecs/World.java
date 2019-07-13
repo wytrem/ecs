@@ -78,8 +78,8 @@ public class World {
 
         GameState pushed = this.injector.getInstance(clazz);
         pushed.checkAndInitialize();
-        pushed.pushed();
         this.stateStack.push(pushed);
+        pushed.pushed();
     }
 
     public GameState pop() {
