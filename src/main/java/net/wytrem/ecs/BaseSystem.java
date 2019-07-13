@@ -16,6 +16,10 @@ public abstract class BaseSystem {
 
     }
 
+    public void dispose() {
+
+    }
+
     public boolean isEnabled() {
         return enabled;
     }

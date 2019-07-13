@@ -1,6 +1,10 @@
 package net.wytrem.ecs;
 
-import com.google.inject.*;
+import com.google.inject.AbstractModule;
+import com.google.inject.Guice;
+import com.google.inject.Injector;
+import com.google.inject.Module;
+import com.google.inject.TypeLiteral;
 import com.google.inject.matcher.Matchers;
 import com.google.inject.spi.InjectionListener;
 import com.google.inject.spi.TypeEncounter;
@@ -40,7 +44,18 @@ public class World {
                 this.iteratingSystems.add((IteratingSystem) sys);
             }
         }
+
+        for (BaseSystem sys : this.systems) {
+            sys.initialize();
+        }
     }
+
+    public void dispose() {
+        for (BaseSystem sys : this.systems) {
+            sys.dispose();
+        }
+    }
+
     private Module createGuiceModule() {
 
         return new AbstractModule() {
