@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Stack;
 
 public class World {
 
@@ -28,43 +29,22 @@ public class World {
     private int nextEntityId;
     private Map<Class<? extends Component>, Mapper<? extends Component>> mappers;
 
+    private Stack<GameState> stateStack;
+    private Injector injector;
+
     public World(final WorldConfiguration configuration) {
         this.allSystems = new ArrayList<>();
         this.iteratingSystems = new ArrayList<>();
         this.processingSystems = new ArrayList<>();
         this.mappers = new HashMap<>();
         this.configuration = configuration;
+        this.stateStack = new Stack<>();
     }
 
     public void initialize() {
-        Injector injector = Guice.createInjector(this.createGuiceModule());
-        for (Class<? extends BaseSystem> clazz : this.configuration.systemClasses) {
-            BaseSystem sys = injector.getInstance(clazz);
-            this.allSystems.add(sys);
-
-            if (sys instanceof IteratingSystem) {
-                this.iteratingSystems.add((IteratingSystem) sys);
-            }
-
-            if (!(sys instanceof Service)) {
-                this.processingSystems.add(sys);
-            }
-        }
-
-        for (BaseSystem sys : this.allSystems) {
-            sys.initialize();
-        }
-    }
-
-    public void dispose() {
-        for (BaseSystem sys : this.allSystems) {
-            sys.dispose();
-        }
-    }
-
-    private Module createGuiceModule() {
-
-        return new AbstractModule() {
+        List<Module> modules = new ArrayList<>();
+        modules.addAll(this.configuration.getExtraModules());
+        modules.add(new AbstractModule() {
             @Override
             protected void configure() {
                 bindListener(Matchers.any(), new GenericTypeClassListener());
@@ -73,7 +53,6 @@ public class World {
                     @Override
                     public <I> void hear(TypeLiteral<I> type, TypeEncounter<I> encounter) {
                         encounter.register((InjectionListener<I>) injectee -> {
-
                             if (injectee instanceof Mapper) {
                                 Mapper mapper = (Mapper) injectee;
                                 World.this.registerComponentMapper(mapper);
@@ -82,7 +61,38 @@ public class World {
                     }
                 });
             }
-        };
+        });
+
+        this.injector = Guice.createInjector(modules);
+    }
+
+    public GameState current() {
+        return this.stateStack.peek();
+    }
+
+    public void push(Class<? extends GameState> clazz) {
+
+        if (!this.stateStack.isEmpty()) {
+            this.stateStack.peek().pause();
+        }
+
+        GameState pushed = this.injector.getInstance(clazz);
+        pushed.checkAndInitialize();
+        pushed.pushed();
+        this.stateStack.push(pushed);
+    }
+
+    public GameState pop() {
+        GameState poped = this.stateStack.pop();
+        poped.poped();
+
+        this.stateStack.peek().resume();
+
+        return poped;
+    }
+
+    public void dispose() {
+        this.stateStack.forEach(GameState::dispose);
     }
 
     public int createEntity() {
@@ -90,13 +100,7 @@ public class World {
     }
 
     public void process(float delta) {
-        this.delta = delta;
-
-        for (BaseSystem system : this.processingSystems) {
-            system.begin();
-            system.process();
-            system.end();
-        }
+        this.stateStack.peek().process();
     }
 
     public float getDelta() {
@@ -126,8 +130,10 @@ public class World {
     }
 
     public void notifyAspectChanged(int entity) {
-        for (IteratingSystem iteratingSystem : this.iteratingSystems) {
-            iteratingSystem.notifyAspectChanged(entity);
+        GameState current = this.stateStack.peek();
+
+        if (current != null) {
+            current.notifyAspectChanged(entity);
         }
     }
 }

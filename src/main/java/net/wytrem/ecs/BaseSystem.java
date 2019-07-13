@@ -3,10 +3,17 @@ package net.wytrem.ecs;
 import javax.inject.Inject;
 
 public abstract class BaseSystem {
-    protected boolean enabled;
-
     @Inject
     protected World world;
+
+    private boolean init = false;
+
+    public final void checkAndInit() {
+        if (!init) {
+            this.initialize();
+            init = true;
+        }
+    }
 
     public void initialize() {
 
@@ -29,10 +36,6 @@ public abstract class BaseSystem {
     }
 
     public boolean isEnabled() {
-        return enabled;
-    }
-
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
+        return true;
     }
 }

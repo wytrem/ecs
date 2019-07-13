@@ -1,20 +1,19 @@
 package net.wytrem.ecs;
 
+import com.google.inject.Module;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class WorldConfiguration {
 
-    public List<Class<? extends BaseSystem>> systemClasses;
-    private int nextComponentId = 0;
+    public List<Module> extraModules;
 
     public WorldConfiguration() {
-        this.systemClasses = new ArrayList<>();
+        this.extraModules = new ArrayList<>();
     }
 
-    public void register(Class<? extends BaseSystem> clazz) {
-        this.systemClasses.add(clazz);
+    public List<Module> getExtraModules() {
+        return extraModules;
     }
-
-
 }
