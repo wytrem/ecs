@@ -19,7 +19,8 @@ import java.util.Map;
 public class World {
 
     private float delta;
-    private final List<BaseSystem> systems;
+    private final List<BaseSystem> allSystems;
+    private final List<BaseSystem> processingSystems;
     private final List<IteratingSystem> iteratingSystems;
 
     private final WorldConfiguration configuration;
@@ -28,8 +29,9 @@ public class World {
     private Map<Class<? extends Component>, Mapper<? extends Component>> mappers;
 
     public World(final WorldConfiguration configuration) {
-        this.systems = new ArrayList<>();
+        this.allSystems = new ArrayList<>();
         this.iteratingSystems = new ArrayList<>();
+        this.processingSystems = new ArrayList<>();
         this.mappers = new HashMap<>();
         this.configuration = configuration;
     }
@@ -38,20 +40,24 @@ public class World {
         Injector injector = Guice.createInjector(this.createGuiceModule());
         for (Class<? extends BaseSystem> clazz : this.configuration.systemClasses) {
             BaseSystem sys = injector.getInstance(clazz);
-            this.systems.add(sys);
+            this.allSystems.add(sys);
 
             if (sys instanceof IteratingSystem) {
                 this.iteratingSystems.add((IteratingSystem) sys);
             }
+
+            if (!(sys instanceof Service)) {
+                this.processingSystems.add(sys);
+            }
         }
 
-        for (BaseSystem sys : this.systems) {
+        for (BaseSystem sys : this.allSystems) {
             sys.initialize();
         }
     }
 
     public void dispose() {
-        for (BaseSystem sys : this.systems) {
+        for (BaseSystem sys : this.allSystems) {
             sys.dispose();
         }
     }
@@ -86,7 +92,7 @@ public class World {
     public void process(float delta) {
         this.delta = delta;
 
-        for (BaseSystem system : this.systems) {
+        for (BaseSystem system : this.processingSystems) {
             system.begin();
             system.process();
             system.end();
