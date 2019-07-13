@@ -87,7 +87,9 @@ public class World {
         this.delta = delta;
 
         for (BaseSystem system : this.systems) {
+            system.begin();
             system.process();
+            system.end();
         }
     }
 

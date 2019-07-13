@@ -12,7 +12,15 @@ public abstract class BaseSystem {
 
     }
 
+    public void begin() {
+
+    }
+
     public void process() {
+
+    }
+
+    public void end() {
 
     }
 
