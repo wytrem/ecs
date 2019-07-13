@@ -1,4 +1,4 @@
-package net.wytrem.ecs.utils;
+package net.wytrem.ecs;
 
 import net.wytrem.ecs.*;
 
