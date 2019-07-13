@@ -9,7 +9,7 @@ import com.google.inject.matcher.Matchers;
 import com.google.inject.spi.InjectionListener;
 import com.google.inject.spi.TypeEncounter;
 import com.google.inject.spi.TypeListener;
-import net.wytrem.ecs.utils.*;
+import net.wytrem.ecs.utils.GenericTypeClassListener;
 
 import java.util.ArrayList;
 import java.util.HashMap;
