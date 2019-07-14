@@ -3,10 +3,10 @@ package net.wytrem.ecs;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 
-public class IteratingSystem extends BaseSystem {
+public abstract class IteratingSystem extends BaseSystem {
 
-    private final Aspect aspect;
-    private final IntList entities;
+    protected final Aspect aspect;
+    protected final IntList entities;
 
     public IteratingSystem(Aspect aspect) {
         this.aspect = aspect;
@@ -20,11 +20,9 @@ public class IteratingSystem extends BaseSystem {
         }
     }
 
-    public void process(int entity) {
+    public abstract void process(int entity);
 
-    }
-
-    public final void notifyAspectChanged(int entity) {
+    public void notifyAspectChanged(int entity) {
         if (this.entities.contains(entity)) {
             if (!this.world.matches(entity, this.aspect)) {
                 this.entities.rem(entity);

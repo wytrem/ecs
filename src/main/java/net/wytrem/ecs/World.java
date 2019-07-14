@@ -100,6 +100,7 @@ public class World {
     }
 
     public void process(float delta) {
+        this.delta = delta;
         this.stateStack.peek().process();
     }
 
