@@ -23,7 +23,7 @@ public abstract class CrossIteratingSystem extends IteratingSystem {
     @Override
     public void notifyAspectChanged(int entity) {
         super.notifyAspectChanged(entity);
-       
+
         if (this.secondAspectEntities.contains(entity)) {
             if (!this.world.matches(entity, this.secondAspect)) {
                 this.secondAspectEntities.rem(entity);

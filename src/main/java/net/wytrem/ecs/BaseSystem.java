@@ -8,7 +8,7 @@ public abstract class BaseSystem {
 
     private boolean init = false;
 
-    public final void checkAndInit() {
+    final void checkAndInit() {
         if (!init) {
             this.initialize();
             init = true;

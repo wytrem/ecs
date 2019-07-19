@@ -9,7 +9,7 @@ import java.util.List;
 
 public abstract class GameState {
 
-    public final List<Class<? extends BaseSystem>> systemClasses;
+    private final List<Class<? extends BaseSystem>> systemClasses;
     private SystemSet systemSet;
 
     @Inject
@@ -23,7 +23,7 @@ public abstract class GameState {
         this.systemClasses.add(clazz);
     }
 
-    public void checkAndInitialize() {
+    void checkAndInitialize() {
         if (this.systemSet == null) {
             this.systemSet = SystemSet.fromClasses(systemClasses, injector);
             this.systemSet.allSystems().forEach(BaseSystem::checkAndInit);
@@ -44,6 +44,10 @@ public abstract class GameState {
 
     public void resume() {
 
+    }
+
+    public SystemSet systems() {
+        return this.systemSet;
     }
 
     public void process() {
