@@ -7,6 +7,9 @@ import net.wytrem.ecs.utils.*;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.Optional;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
+import java.util.function.IntConsumer;
 
 @Singleton
 public class Mapper<C extends Component> extends ParentMapper<C> {
@@ -51,5 +54,17 @@ public class Mapper<C extends Component> extends ParentMapper<C> {
 
     public boolean has(int entity) {
         return this.mapping.containsKey(entity);
+    }
+
+    public void forEach(BiConsumer<? super Integer, ? super C> biConsumer) {
+        this.mapping.forEach(biConsumer);
+    }
+
+    public void forEachValue(Consumer<? super C> consumer) {
+        this.mapping.values().forEach(consumer);
+    }
+
+    public void forEachKey(IntConsumer consumer) {
+        this.mapping.keySet().forEach(consumer);
     }
 }
