@@ -1,14 +1,11 @@
 package net.wytrem.ecs;
 
-import com.google.inject.AbstractModule;
-import com.google.inject.Guice;
-import com.google.inject.Injector;
-import com.google.inject.Module;
-import com.google.inject.TypeLiteral;
+import com.google.inject.*;
 import com.google.inject.matcher.Matchers;
 import com.google.inject.spi.InjectionListener;
 import com.google.inject.spi.TypeEncounter;
 import com.google.inject.spi.TypeListener;
+import com.google.inject.util.Types;
 import net.wytrem.ecs.utils.GenericTypeClassListener;
 
 import java.util.ArrayList;
@@ -43,7 +40,7 @@ public class World {
 
     public void initialize() {
         List<Module> modules = new ArrayList<>();
-        modules.addAll(this.configuration.getExtraModules());
+        modules.addAll(this.configuration.extraModules);
         modules.add(new AbstractModule() {
             @Override
             protected void configure() {
@@ -112,7 +109,7 @@ public class World {
         this.mappers.put(cMapper.getComponentTypeClass(), cMapper);
     }
 
-    public boolean matches(int entity, Aspect aspect) {
+    boolean matches(int entity, Aspect aspect) {
         for (Class<? extends Component> clazz : aspect) {
             if (!this.has(entity, clazz)) {
                 return false;
@@ -122,11 +119,11 @@ public class World {
         return true;
     }
 
-    public <C extends Component> boolean has(int entity, Class<C> clazz) {
+    <C extends Component> boolean has(int entity, Class<C> clazz) {
         return this.getMapper(clazz).has(entity);
     }
 
-    public <C extends Component> Mapper<C> getMapper(Class<C> clazz) {
+    <C extends Component> Mapper<C> getMapper(Class<C> clazz) {
         return (Mapper<C>) this.mappers.get(clazz);
     }
 

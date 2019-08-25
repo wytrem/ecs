@@ -7,13 +7,13 @@ import java.util.List;
 
 public class WorldConfiguration {
 
-    public List<Module> extraModules;
+    List<Module> extraModules;
 
     public WorldConfiguration() {
         this.extraModules = new ArrayList<>();
     }
 
-    public List<Module> getExtraModules() {
-        return extraModules;
+    public void addModule(Module module) {
+        this.extraModules.add(module);
     }
 }
