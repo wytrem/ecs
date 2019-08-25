@@ -7,9 +7,6 @@ import java.util.stream.IntStream;
 public class Test {
     public static void main(String[] args) {
         WorldConfiguration configuration = new WorldConfiguration();
-
-        configuration.setDefaultMapper();
-
         World world = new World(configuration);
 
 
@@ -50,11 +47,29 @@ public class Test {
     public static class FirstSystem extends BaseSystem {
         int pass;
 
-        @Inject
-        Mapper<MyComponent> myComponentMapper;
+//        @Inject
+//        Mapper<MyComponent> myComponentMapper;
+
+        @Override
+        public void initialize() {
+            world.addMapperRegisterListener(mapper -> System.out.println(mapper.getComponentTypeClass() + " thats mapper"));
+            Mapper<MyComponent> myComponentMapper = world.getMapper(MyComponent.class);
+            myComponentMapper.addListener(new Mapper.ChangeListener<MyComponent>() {
+                @Override
+                public void onSet(int entity, MyComponent oldValue, MyComponent newValue) {
+                    System.out.println("onSet(" + entity + ", " + oldValue + ", " + newValue + ")");
+                }
+
+                @Override
+                public void onUnset(int entity, MyComponent oldValue) {
+                    System.out.println("onSet(" + entity + ", " + oldValue + ")");
+                }
+            });
+        }
 
         @Override
         public void process() {
+            Mapper<MyComponent> myComponentMapper = world.getMapper(MyComponent.class);
             if (pass++ == 2) {
                 System.out.println("Mapper is " + myComponentMapper);
                 myComponentMapper.set(12, new MyComponent("twelve"));
@@ -70,11 +85,12 @@ public class Test {
     public static class SecondSystem extends BaseSystem {
         int pass;
 
-        @Inject
-        Mapper<MyComponent> myComponentMapper;
+//        @Inject
+//        Mapper<MyComponent> myComponentMapper;
 
         @Override
         public void process() {
+            Mapper<MyComponent> myComponentMapper = world.getMapper(MyComponent.class);
             System.out.println("Mapper is " + myComponentMapper);
             System.out.println(myComponentMapper.get(12).value);
             System.out.println("This is SecondSystem pass " + pass++);

@@ -29,6 +29,10 @@ public final class Mapper<C extends Component> {
         return componentTypeClass;
     }
 
+    void setComponentTypeClass(Class<C> componentTypeClass) {
+        this.componentTypeClass = componentTypeClass;
+    }
+
     @Inject
     Injector injector;
 

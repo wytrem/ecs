@@ -8,11 +8,8 @@ import com.google.inject.spi.TypeListener;
 import com.google.inject.util.Types;
 import net.wytrem.ecs.utils.GenericTypeClassListener;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Stack;
+import java.util.*;
+import java.util.function.Consumer;
 
 public class World {
 
@@ -80,12 +77,12 @@ public class World {
     }
 
     public GameState pop() {
-        GameState poped = this.stateStack.pop();
-        poped.poped();
+        GameState popped = this.stateStack.pop();
+        popped.poped();
 
         this.stateStack.peek().resume();
 
-        return poped;
+        return popped;
     }
 
     public void dispose() {
@@ -105,11 +102,23 @@ public class World {
         return delta;
     }
 
-    private <C extends Component> void registerComponentMapper(Mapper<C> cMapper) {
-        this.mappers.put(cMapper.getComponentTypeClass(), cMapper);
+    private final Set<Consumer<Mapper<? extends Component>>> listenerSet = new HashSet<>();
+
+    public void addMapperRegisterListener(Consumer<Mapper<? extends Component>> listener) {
+        this.mappers.values().forEach(listener);
+        this.listenerSet.add(listener);
     }
 
-    boolean matches(int entity, Aspect aspect) {
+    private <C extends Component> void registerComponentMapper(Mapper<C> cMapper) {
+        if (this.mappers.containsKey(cMapper.getComponentTypeClass())) {
+            throw new IllegalArgumentException("Already registered component mapper for " + cMapper.getComponentTypeClass());
+        }
+
+        this.mappers.put(cMapper.getComponentTypeClass(), cMapper);
+        this.listenerSet.forEach(listener -> listener.accept(cMapper));
+    }
+
+    public boolean matches(int entity, Aspect aspect) {
         for (Class<? extends Component> clazz : aspect) {
             if (!this.has(entity, clazz)) {
                 return false;
@@ -119,15 +128,20 @@ public class World {
         return true;
     }
 
-    <C extends Component> boolean has(int entity, Class<C> clazz) {
+    public <C extends Component> boolean has(int entity, Class<C> clazz) {
         return this.getMapper(clazz).has(entity);
     }
 
-    <C extends Component> Mapper<C> getMapper(Class<C> clazz) {
+    @SuppressWarnings("unchecked")
+    public <C extends Component> Mapper<C> getMapper(Class<C> clazz) {
+        if (!this.mappers.containsKey(clazz)) {
+            return (Mapper<C>) this.injector.getInstance(Key.get(TypeLiteral.get(Types.newParameterizedType(Mapper.class, clazz))));
+        }
+
         return (Mapper<C>) this.mappers.get(clazz);
     }
 
-    public void notifyAspectChanged(int entity) {
+    void notifyAspectChanged(int entity) {
         GameState current = this.stateStack.peek();
 
         if (current != null) {
