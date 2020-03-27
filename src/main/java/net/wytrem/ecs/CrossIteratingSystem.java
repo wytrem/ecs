@@ -3,9 +3,16 @@ package net.wytrem.ecs;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 
+/**
+ * A system that operates on pairs of entities with specific aspects.
+ */
 public abstract class CrossIteratingSystem extends IteratingSystem {
     private final Aspect secondAspect;
     private final IntList secondAspectEntities;
+
+    public CrossIteratingSystem(Aspect both) {
+        this(both, both);
+    }
 
     public CrossIteratingSystem(Aspect first, Aspect second) {
         super(first);

@@ -4,12 +4,15 @@ import com.google.inject.MembersInjector;
 
 import java.lang.reflect.Field;
 
-public class ComponentTypeClassInjector<T> implements MembersInjector<T> {
+/**
+ * Injects a {@link Class} object into the given field of the given generic type.
+ */
+public class GenericTypeClassInjector<T> implements MembersInjector<T> {
 
     private final Field field;
     private final Class<?> clazz;
 
-    ComponentTypeClassInjector(Field field, Class<?> clazz) {
+    GenericTypeClassInjector(Field field, Class<?> clazz) {
         this.field = field;
         this.clazz = clazz;
         field.setAccessible(true);

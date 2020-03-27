@@ -1,7 +1,8 @@
 package net.wytrem.ecs;
 
-import net.wytrem.ecs.*;
-
+/**
+ * A system which does not need ticking.
+ */
 public class Service extends BaseSystem {
     @Override
     public final void begin() {

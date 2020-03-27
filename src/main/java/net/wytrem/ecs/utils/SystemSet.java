@@ -6,6 +6,10 @@ import net.wytrem.ecs.*;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * A collection of {@link BaseSystem}, divided in three sub-collections : all, processing systems (ie. those which need
+ * ticking), and iterating systems (ie. those which need notification when entity aspect changed).
+ */
 public class SystemSet {
     private final List<BaseSystem> allSystems;
     private final List<BaseSystem> processingSystems;
@@ -38,6 +42,9 @@ public class SystemSet {
         return null;
     }
 
+    /**
+     * Instantiate each system class using the given injector.
+     */
     public static SystemSet fromClasses(Iterable<Class<? extends BaseSystem>> classes, Injector injector) {
         SystemSet set = new SystemSet();
 

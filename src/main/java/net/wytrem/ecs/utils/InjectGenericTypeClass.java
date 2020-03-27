@@ -9,6 +9,9 @@ import static java.lang.annotation.ElementType.*;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 @BindingAnnotation @Target({ FIELD, PARAMETER, METHOD }) @Retention(RUNTIME)
-public @interface ComponentTypeClass {
+/**
+ * Used to infer the generic type into a field, when an instance is created via {@link com.google.inject.Injector}.
+ */
+public @interface InjectGenericTypeClass {
 
 }

@@ -10,6 +10,7 @@ public class Test {
         World world = new World(configuration);
 
 
+
         world.initialize();
         world.push(StateA.class);
         System.out.println("process");

@@ -3,6 +3,9 @@ package net.wytrem.ecs;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 
+/**
+ * A system that only operates on entities with a specific {@link Aspect}.
+ */
 public abstract class IteratingSystem extends BaseSystem {
 
     protected final Aspect aspect;
