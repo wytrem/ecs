@@ -11,10 +11,12 @@ version '2.3'
 sourceCompatibility = 1.8
 
 repositories {
+    mavenLocal()
     mavenCentral()
 }
 
 dependencies {
+    api group: "com.google.guava", name: "guava", version: "21.0"
     api group: "com.google.inject", name: "guice", version: "3.0"
     api group: "it.unimi.dsi", name: "fastutil", version: "8.2.2"
 }
